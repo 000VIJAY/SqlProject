@@ -22,7 +22,7 @@ insert into userAddress(addressId,addressLine1,addressLine2,user_State) values(3
 select * from userAddress
 
 alter table dbo.Demo alter column  userAddress int 
-alter table dbo.Demo ADD Foreign key(addressId) REFERENCES userAddress(addressId)
+alter table dbo.Demo ADD addressId smallint REFERENCES userAddress(addressId)
 alter table dbo.Demo ADD constraint FK_AddressId Foreign key(addressId) REFERENCES userAddress(addressId)
 
 create table userDeatils (
