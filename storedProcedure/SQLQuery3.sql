@@ -75,3 +75,61 @@ where (@MinLength IS NULL OR FilmRunTimeMinutes >=@MinLength) AND
 order by FilmRunTimeMinutes Desc 
 end
 exec spFilm_Critria 
+
+--variable 
+Declare @MyDate DateTime
+
+SET @MyDate ='1980-01-01'
+
+select FilmName,FilmReleaseDate ,'Film' as [type] from tblFilm
+where FilmReleaseDate >= @MyDate
+UNION ALL 
+Select ActorName,ActorDOB,'Actor' from tblActor where ActorDOB >= @MyDate
+UNION ALL 
+SELECT DirectorName,DirectorDOB,'Director'
+from tblDirector where DirectorDOB<=@MyDate;
+
+--variable 
+Declare @MyDate DateTime
+Declare @NumFilms int
+SET @MyDate ='1980-01-01'
+SET @NumFilms =(select count(*) from tblFilm where FilmReleaseDate>=@MyDate)
+
+--print
+select 'Number of films',@NumFilms
+--this will print in message
+PRINT 'Number of films=' +cast(@NumFilms as varchar(MAX))
+select FilmName,FilmReleaseDate ,'Film' as [type] from tblFilm
+where FilmReleaseDate >= @MyDate
+UNION ALL 
+Select ActorName,ActorDOB,'Actor' from tblActor where ActorDOB >= @MyDate
+UNION ALL 
+SELECT DirectorName,DirectorDOB,'Director'
+from tblDirector where DirectorDOB<=@MyDate;
+
+
+--output parameter we can write output parameter in stored procedure we can have multiple output parameter stored procedure only return one value and number only
+
+Create Procedure sp_Films_In_Year
+(
+@Year int
+,@FilmList varchar(MAX) output,
+@FilmCount int OUTPUT
+)
+as 
+begin
+DECLARE @Films Varchar(MAX)
+Set @Films =''
+
+select @Films = @Films + FilmName from tblFilm where YEAR(FilmReleaseDate) = @Year
+order by FilmName ASC
+SET @FilmCount = @@ROWCOUNT
+SET @FilmList = @Films
+end
+
+
+DECLARE @Names Varchar(MAX)
+DECLARE @Count int
+EXEC sp_Films_In_Year @Year = 2000,@FilmList = @Names OUTPUT ,@FilmCount = @Count OUTPUT
+
+SELECT @Count as [Number of Films] ,@Names 
